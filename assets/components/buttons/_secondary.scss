@@ -1,0 +1,11 @@
+@import '../../abstracts/colors';
+@import '../../abstracts/mixins';
+
+.secondary-btn{
+    @include font(1.8rem, 1.8rem, uppercase);
+    background-color: $secondary-btn-color;
+    padding: 1.6rem;
+    height: 5rem;
+    border: 1px solid $secondary-color;
+    border-radius: 4px;
+}

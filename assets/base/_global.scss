@@ -1,0 +1,51 @@
+@import '../abstracts/mixins';
+
+.mobile{
+    display: none;
+}
+
+.container-fluid{
+    width: 100%;
+}
+
+.container{
+    width: 90%;
+    margin: auto;
+}
+
+.row{
+    margin: 13rem 0;
+}
+
+.column{
+    @include display-flex(column, space-between, center);
+}
+
+.tabs{
+    @include display-flex(row, space-between, center);
+    list-style-type: none;
+}
+
+.logo{
+    @include display-flex(row, center, baseline);
+}
+
+.grid{
+    @include display-flex(row, center, center);
+    flex-wrap: wrap;
+}
+
+.card-wrapper{
+    @include display-flex(row, space-between, center);
+}
+
+
+@media (max-width: 800px) {
+    .mobile{
+        display: block;
+    }
+
+    .hidden{
+        display: none;
+    }
+}

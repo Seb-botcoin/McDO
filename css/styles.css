@@ -1,0 +1,52 @@
+
+
+body {
+  background-color: #000000;
+}
+
+.jumbotron {
+  padding: 0;
+  background-color: #141414;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.jumbotron .content-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #FFFFFF;
+}
+
+#statsSection {
+  padding: 2rem 0;
+  background-color: #141414;
+  border-top: 4px solid #F61221;
+  border-bottom: 4px solid #F61221;
+  text-align: center;
+}
+
+#statsSection .stat-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #F61221;
+}
+
+footer {
+  background-color: #141414;
+  border-top: 4px solid #F61221;
+}
+
+#testimonials {
+  padding: 2rem 0;
+  background-color: #141414;
+  border-top: 4px solid #F61221;
+}
+
+#testimonials .card {
+  background-color: #141414;
+  border-radius: 10px;
+  padding: 1.5rem;
+}

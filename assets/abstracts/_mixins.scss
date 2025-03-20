@@ -1,0 +1,22 @@
+@import 'variables';
+
+@mixin font($font-size, $line-height, $text-transform){
+    font-size: $font-size;
+    line-height: $line-height;
+    text-transform: $text-transform;
+}
+
+@mixin display-flex($flex-direction, $justify-content, $align-items) {
+    display: flex;
+    flex-direction: $flex-direction;
+    justify-content: $justify-content;
+    align-items: $align-items;
+}
+
+@mixin pos($position,$top,$right,$bottom,$left){
+    position: $position;
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+}

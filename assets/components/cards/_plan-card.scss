@@ -1,0 +1,89 @@
+@import '../../abstracts/variables';
+@import '../../abstracts/mixins';
+@import '../../abstracts/colors';
+
+.card-plan{
+    @include display-flex(column, space-between,start);
+    height: 52.3rem;
+    width: 38rem;
+    border: 1px solid $secondary-color;
+    padding: 4rem 4.5rem;
+    text-align: left;
+    .logo{
+        margin-bottom: 4rem;
+        justify-content: start;
+        align-items: center;
+        height: 4rem;
+        width: 17rem;
+        gap: 1rem;
+        img{
+            width: 30%;
+        }
+    }
+    .content{
+        h3{
+            @include font(2.7rem, 3.8rem, capitalize);
+        }
+        p{
+            @include font(1.6rem, 2.6rem, capitalize);
+        }
+        ul {
+            padding: 1rem 0;
+            padding-left: 0;
+            li {
+                list-style: none;
+                padding-left: 2rem;
+                position: relative;
+            }
+            
+            li::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0.4rem; /* Ajuste selon la taille de ton texte */
+                width: 1.5rem;
+                height: 1.5rem;
+                background-image: url('../assets/images/icons/checkmark.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                z-index: 1; /* Assure que l’image est visible */
+            }
+        
+        }
+    }
+    .cta{
+        width: 100%;
+        p{
+            @include font(2.8rem, 3.8rem, none);
+        }
+        span{
+            @include font(1.6rem, 2.6rem, none);
+            color: $secondary-color;
+        }
+    }
+}
+
+@media(max-width:800px){
+    .card-plan{
+        position: relative;
+        width: 80%;
+        margin: auto;
+        height: fit-content;
+        .logo{
+            margin-bottom: 1rem;
+            width: 60%;
+        }
+        .content{
+            width: 60%;
+        }
+        .cta{
+            width: 20%;
+            text-align: left;
+            @include pos(absolute,9rem,4rem,none,none)
+        }
+    }
+}
+
+
+
+

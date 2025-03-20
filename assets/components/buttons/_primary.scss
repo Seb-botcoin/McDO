@@ -1,0 +1,12 @@
+@import '../../abstracts/colors';
+@import '../../abstracts/mixins';
+
+.primary-btn{
+    @include font(1.8rem, 1.8rem, uppercase);
+    display: block;
+    background-color: $primary-btn-color;
+    text-align: center;
+    padding: 2rem 8rem;
+    border-radius: 4px;
+    width: 100%;
+}

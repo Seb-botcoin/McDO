@@ -1,0 +1,43 @@
+@import 'colors';
+@import 'mixins';
+
+
+$font-primary: "avenir-book";
+$font-size-base: 16px;
+
+$font-secondary: "avenir-black";
+
+*{
+    color: $primary-color;
+}
+
+h1, h2, h3, .cta p{
+    font-family: $font-secondary;
+}
+h1,h2{
+    @include font(4.3rem, 5.4rem, capitalize);
+}
+
+.hero-banner p:first-of-type{
+    @include font(1.6rem, 2.6rem, none);
+    color: $secondary-color;
+}
+.hero-banner p{
+    @include font(1.2rem, 2.2rem, capitalize);  
+    color: $secondary-color;
+}
+.hero-banner span{
+    @include font(1.2rem, 2.2rem, capitalize);  
+}
+.option{
+    @include font(2rem, 3rem, capitalize);
+}
+.tabs a{
+    @include font(2rem, 3rem, uppercase);
+}
+.plans > p:first-of-type{
+    @include font(2rem, 3rem, none);
+    color: $secondary-color;
+}
+
+

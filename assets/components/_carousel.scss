@@ -1,0 +1,19 @@
+.column{
+    position: relative;
+}
+
+.slider{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    img{
+        padding: 1rem;
+        z-index: 1;
+    }
+    
+}
+

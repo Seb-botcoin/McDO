@@ -1,0 +1,111 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/colors';
+
+body{
+    background-color: $background-color;
+}
+//Hero-banner
+
+.hero-banner{
+    .bg-image{
+        img{
+            width: 100%;
+            height: 67.5rem;
+            @include pos(absolute,0,none,none,0);
+            object-fit: cover;
+            z-index: -10;
+            overflow: hidden;
+        }
+    }
+    .column{
+        gap: $gap-small;
+        .col{
+            @include display-flex(row, space-between, center);
+            gap: $gap-mid;
+            .cta{
+                @include display-flex(column, center, center);
+                gap: $gap-large;
+                .logo{
+                    height: 7rem;
+                    gap: $gap-mid;
+                }
+            }
+        }
+        .media{
+            @include display-flex(row, center, baseline);
+            height: 4rem;
+            gap: $gap-small;
+            img{
+                width: 100%;
+            }
+        }
+    }
+}
+
+//recommendations
+
+.recommendations{
+    .column{
+        gap: $gap-mid;
+        .tabs{
+            gap: $gap-large;
+        }
+        .tabs > :first-child{
+           border-bottom: solid 5px $primary-color; 
+        }
+        .grid{
+            flex: 1 1 calc(32%);
+            gap: $gap-mid;
+        }
+    }
+}
+
+//recommendations
+
+.plans{
+    .column{
+        gap: $gap-small;
+        .card-wrapper{
+            gap: $gap-mid;
+        }
+    }
+    .info{
+        @include font(1.2rem, 2.2rem, none); 
+        p{
+            color: $secondary-color;
+        } 
+    }
+}
+
+//media queries
+
+@media (max-width: 800px){
+    .hero-banner{
+        .mobile{
+            display: block;
+            width: 80%;
+            margin: auto;
+            .logo{
+                margin-bottom: 2rem;
+                gap: $gap-mid;
+            }
+        }
+    }
+    .recommendations{
+        .grid{
+            flex: auto;
+            justify-content: space-between;
+            width: 80%;
+            margin: auto;
+            gap: 1rem;
+            .big {
+                width: 100%; /* Prend toute la largeur */
+            }
+            
+            .small {
+                width: calc(29%); /* 3 éléments sur une ligne */
+            }
+        }
+    }
+}

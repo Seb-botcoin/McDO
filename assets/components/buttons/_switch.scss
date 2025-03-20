@@ -1,0 +1,20 @@
+@import '../../abstracts/colors';
+@import '../../abstracts/mixins';
+
+.switch{
+    display: block;
+    
+    background-color: $switch-color;
+    text-align: center;
+    width: 25rem;
+    padding: 0.8rem 0rem;
+    border-radius: 21px;
+    a{
+        padding: 0.8rem 1.6rem;
+        @include font(1.6rem, 3rem, capitalize);
+    }
+    .active{
+        background-color: $primary-btn-color; 
+        border-radius: 19px;
+    }
+}

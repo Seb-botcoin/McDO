@@ -1,0 +1,41 @@
+
+@import '../abstracts/mixins';
+@import '../abstracts/colors';
+@import '../abstracts/variables';
+
+footer{
+    .column{
+        gap: $gap-small;
+        @include font(1.2rem, 2.2rem, capitalize); 
+        color: $secondary-color;
+        padding-bottom: 1rem;
+        .link{
+            @include display-flex(row, center, center);
+            flex-wrap: wrap;
+            gap: $gap-small;
+            list-style-type: none;
+            width: 45%;
+            .language{
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    footer{
+        .column{
+            .link{
+                @include display-flex(column, flex-start, baseline);
+                width: 80%;
+                height: 20rem;
+            }
+            .credit{
+                @include display-flex(row, space-between, baseline);
+                width: 80%;
+            }
+        }
+    }
+}
