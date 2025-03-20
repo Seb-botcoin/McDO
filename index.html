@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Web McDO</title>
+    <title>Page McDO</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
+
 </head>
-
-
 <body>
 
-    <header class="navbar navbar-expand-lg bg-warning">
-        <div class="container">
+    <header class="navbar navbar-expand-lg bg-warning px-4 d-flex align-items-center">
+        <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo -->
             <a class="navbar-brand" href="#">
                 <img src="/assets/images/mcdo_logo.png" alt="McDonald's Logo" height="50">
@@ -27,26 +26,40 @@
     
             <!-- Menu de navigation -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto d-flex align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Menu</a>
+                        <a class="nav-link text-dark fw-bold" href="#">Menu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Promotions</a>
+                        <a class="nav-link text-dark fw-bold" href="#">Promotions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Restaurants</a>
+                        <a class="nav-link text-dark fw-bold" href="#">Restaurants</a>
                     </li>
                 </ul>
-    
-                <!-- Bouton Connexion -->
-                <a href="#" class="btn btn-danger ms-3">Connexion</a>
             </div>
+    
+            <!-- Bouton Connexion -->
+            <a href="#" class="btn btn-danger ms-3 fw-bold">Connexion</a>
         </div>
     </header>
+    
+    <!-- Footer fixe récapitulatif de commande -->
+    <footer class="order-footer bg-warning px-4 py-3 position-fixed bottom-0 w-100">
+        <div class="container d-flex justify-content-between">
+            <div class="order-summary d-flex gap-4">
+                <div class="order-items text-dark px-3 py-2 d-flex fw-bold">
+                    <i class="bi bi-cart-fill me-2"></i> <span id="order-items">0</span> articles
+                </div>
+                <div class="order-total text-dark px-3 py-2 d-flex fw-bold">
+                    <i class="bi bi-cash-coin me-2"></i><span id="order-total">0.00</span> €
+                </div>
+            </div>
+            <button id="btnRecapCommande" class="btn btn-success fw-bold px-4 py-2 ">Voir la commande</button>
+        </div>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-<script src="script.js"></script>
 </html>
-
