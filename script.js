@@ -225,34 +225,48 @@ function afficherProduitsDansModale(categorie, items) {
 
   let modalElement = document.getElementById('produitsModal');
   if (modalElement) {
+// Ajoute le blur à la modale
+modalElement.querySelector('.modal-content').classList.add('blur-self');
+
+// Initialise et affiche la modale
     let modal = new bootstrap.Modal(modalElement);
     modal.show();
+
+    // Supprime le blur une fois la modale fermée
+    modalElement.addEventListener('hidden.bs.modal', function () {
+      modalElement.querySelector('.modal-content').classList.remove('blur-self');
+    });
+
   }
 }
 
 // Fonction pour afficher les détails d'un produit dans une modale centrée
 function afficherDetailsProduit(item) {
-  // Vérifie que la modale existe
   let detailsModalElement = document.getElementById('produitDetailsModal');
   if (!detailsModalElement) {
     console.error("L'élément 'produitDetailsModal' est introuvable.");
     return;
   }
 
-  // Récupère les éléments à l'intérieur de la modale
+  // Flouter la modale des produits
+  let produitsModal = document.getElementById('produitsModal');
+  if (produitsModal) {
+    produitsModal.querySelector('.modal-content').classList.add('blur-background');
+  }
+
+  // Récupère les éléments de la modale de détails
   const produitImage = document.getElementById('produitDetailsImage');
   const produitName = document.getElementById('produitDetailsName');
   const produitDescription = document.getElementById('produitDetailsDescription');
   const produitPrix = document.getElementById('produitDetailsPrix');
   const produitCalories = document.getElementById('produitDetailsCalories');
 
-  // Vérifie que tous les éléments requis sont présents
   if (!produitImage || !produitName || !produitDescription || !produitPrix || !produitCalories) {
     console.error("Certains éléments de la modale des détails sont introuvables.");
     return;
   }
 
-  // Met à jour les éléments de la modale avec les données du produit
+  // Remplir les infos
   produitImage.src = `/assets/${item.image}`;
   produitImage.alt = item.name;
   produitName.textContent = item.name;
@@ -260,10 +274,18 @@ function afficherDetailsProduit(item) {
   produitPrix.textContent = `Prix : ${item.price.toFixed(2)} €`;
   produitCalories.textContent = `Calories : ${item.calories || 'N/A'} kcal`;
 
-  // Affiche la modale avec Bootstrap
+  // Afficher la modale
   let detailsModal = new bootstrap.Modal(detailsModalElement);
   detailsModal.show();
+
+  // Supprimer le flou quand on ferme la modale
+  detailsModalElement.addEventListener('hidden.bs.modal', function () {
+    if (produitsModal) {
+      produitsModal.querySelector('.modal-content').classList.remove('blur-background');
+    }
+  });
 }
+
 
 
 
@@ -311,7 +333,7 @@ function mettreAJourTotalArticles() {
   let index = 0;
 
   // Parcourt les éléments de la commande pour calculer le total des quantités
-  while (index < commande.length) {
+  while (index < commande.length) { 
     totalArticles += commande[index].quantity;
     index++;
   }
