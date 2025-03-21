@@ -211,7 +211,6 @@ function afficherEtConfigurerModale() {
   }
 }
 
-
 // Fonction pour afficher les détails d'un produit dans une modale centrée
 function afficherDetailsProduit(item) {
   let detailsModalElement = document.getElementById('produitDetailsModal');
@@ -232,8 +231,9 @@ function afficherDetailsProduit(item) {
   const produitDescription = document.getElementById('produitDetailsDescription');
   const produitPrix = document.getElementById('produitDetailsPrix');
   const produitCalories = document.getElementById('produitDetailsCalories');
+  const produitPanier = document.getElementById('produitDetailsPanier');
 
-  if (!produitImage || !produitName || !produitDescription || !produitPrix || !produitCalories) {
+  if (!produitImage || !produitName || !produitDescription || !produitPrix || !produitCalories || !produitPanier) {
     console.error("Certains éléments de la modale des détails sont introuvables.");
     return;
   }
@@ -246,6 +246,36 @@ function afficherDetailsProduit(item) {
   produitPrix.textContent = `Prix : ${item.price.toFixed(2)} €`;
   produitCalories.textContent = `Calories : ${item.calories || 'N/A'} kcal`;
 
+//== Ajouter le bouton "Ajouter au panier" ==//
+produitPanier.innerHTML = ''; // Nettoyer le conteneur
+
+let boutonPanier = document.createElement('button'); // Crée un bouton
+boutonPanier.className = 'btn btn-success w-100'; // Classe Bootstrap pour le style
+boutonPanier.textContent = 'Ajouter au panier'; // Texte du bouton
+
+// Gestion du clic sur le bouton
+boutonPanier.addEventListener('click', function() {
+  let commandeItem = initialiserCommandePourProduit(item); // Ajout de l'article dans la commande
+  commandeItem.quantity++; // Ajoute la quantité
+
+  mettreAJourTotalArticles(); // Met à jour le total des articles
+  mettreAJourTotalValeurCommande(); // Met à jour la valeur totale
+
+  // Mise à jour de l'affichage dans la modale principale
+  let quantityDisplay = document.querySelector('.quantity[data-id="' + item.id + '"]'); // Récupère le compteur
+  let btnMinus = document.querySelector('.btn-minus[data-id="' + item.id + '"]'); // Récupère le bouton "-"
+
+  if (quantityDisplay) {
+    quantityDisplay.textContent = commandeItem.quantity; // Met à jour l'affichage
+  }
+
+  if (btnMinus && commandeItem.quantity > 0) {
+    btnMinus.disabled = false; // Active le bouton "-" si la valeur est suppérieur à 0
+  }
+});
+
+produitPanier.appendChild(boutonPanier); // Ajoute le bouton au conteneur
+
   // Afficher la modale
   let detailsModal = new bootstrap.Modal(detailsModalElement);
   detailsModal.show();
@@ -257,8 +287,6 @@ function afficherDetailsProduit(item) {
     }
   });
 }
-
-
 
 // Fonction pour afficher le récapitulatif de la commande
 function afficherRecapitulatifCommande() {
