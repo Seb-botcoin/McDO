@@ -1,8 +1,10 @@
 
 // Déclaration des variables globales pour stocker les données JSON et les catégories fixes
 let donnees = []; // Contiendra les produits chargés depuis le fichier JSON
-let categoriesFixes = ["burgers", "sides", "drinks", "desserts", "menus", "happyMeal"]; // Liste explicite des catégories
 let commande = []; // Chaque élément sera { id, name, quantity, unitPrice }
+let articlesRattaches = []; // Stocke les articles "offerts"
+let categoriesFixes = ["burgers", "sides", "drinks", "desserts", "menus", "happyMeal"]; // Liste explicite des catégories
+
 
 // Fonction pour charger les données depuis un fichier JSON
 function chargerDonnees() {
@@ -127,6 +129,24 @@ function initialiserCommandePourProduit(item) {
       unitPrice: item.price
     });
     commandeItem = commande[commande.length - 1];
+  
+    // Ajouter les articles rattachés si le produit est un menu ou un Happy Meal
+    if (item.categorie === "menus" || item.categorie === "happyMeal") {
+      articlesRattaches.push(
+        {
+          idParent: item.id,
+          name: "Frites Moyennes",
+          type: "accompagnement",
+          price: 0
+        },
+        {
+          idParent: item.id,
+          name: "Cadeau Surprise",
+          type: "cadeau",
+          price: 0
+        }
+      );
+    }
   }
   return commandeItem;
 }
@@ -166,6 +186,7 @@ function creerCarteProduit(item, commandeItem) {
 function attacherEvenementsAuxBoutons(btnMinus, btnPlus, quantityDisplay, commandeItem) {
   // Gérer le clic sur le bouton "moins"
   btnMinus.addEventListener('click', () => {
+
     if (commandeItem.quantity > 0) {
       commandeItem.quantity--;
       quantityDisplay.textContent = commandeItem.quantity;
@@ -183,6 +204,7 @@ function attacherEvenementsAuxBoutons(btnMinus, btnPlus, quantityDisplay, comman
 
   // Gérer le clic sur le bouton "plus"
   btnPlus.addEventListener('click', () => {
+    console.log(commandeItem.name, commandeItem.categorie);
     commandeItem.quantity++;
     quantityDisplay.textContent = commandeItem.quantity;
 
