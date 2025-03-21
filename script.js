@@ -22,17 +22,17 @@ function chargerDonnees() {
 // Fonction pour transformer les données en tableau indexé
 function transformerDonneesEnTableau(elements) {
   let tableau = []; // Tableau pour stocker les données transformées
-  let index = 0;
+  let i = 0;
 
-  while (index < categoriesFixes.length) {
-    let categorie = categoriesFixes[index]; // Récupérer chaque catégorie fixe
+  while (i < categoriesFixes.length) {
+    let categorie = categoriesFixes[i]; // Récupérer chaque catégorie fixe
     if (elements[categorie]) { // Vérifier si la catégorie existe dans les données
       tableau.push({
         categorie: categorie, // Ajouter le nom de la catégorie
         produits: elements[categorie] // Ajouter les produits associés
       });
     }
-    index++;
+    i++;
   }
 
   return tableau; // Retourner le tableau indexé
@@ -54,11 +54,11 @@ function creerRangee(categoriesTableau) {
   let ligne = document.createElement('div');
   ligne.className = 'row'; // Classe Bootstrap pour mise en page
 
-  let index = 0;
-  while (index < categoriesTableau.length) {
-    let colonne = creerColonne(categoriesTableau[index].categorie, categoriesTableau[index].produits);
+  let i = 0;
+  while (i < categoriesTableau.length) {
+    let colonne = creerColonne(categoriesTableau[i].categorie, categoriesTableau[i].produits);
     ligne.appendChild(colonne); // Ajouter chaque colonne à la rangée
-    index++;
+    i++;
   }
 
   return ligne;
@@ -259,44 +259,8 @@ function afficherDetailsProduit(item) {
 }
 
 
-/*
 
-// Fonction pour afficher le récapitulatif de commande
-function afficherRecapitulatifCommande() {
-  let listeCommande = document.getElementById('commandeListe');
-  let prixTotalElement = document.getElementById('prixTotal');
-  
-  listeCommande.innerHTML = ''; // Vide la liste
-  let prixTotal = 0;
-
-  let index = 0;
-  while (index < commande.length) {
-    const item = commande[index];
-
-    if (item.quantity > 0) {
-      const sousTotal = item.quantity * item.unitPrice;
-      prixTotal += sousTotal;
-
-      const listItem = document.createElement('li');
-      listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-      listItem.innerHTML = `
-        <span class="fw-bold">${item.name}</span>
-        <span>${item.quantity} x ${item.unitPrice.toFixed(2)} €</span>
-        <span>${sousTotal.toFixed(2)} €</span>
-      `;
-      listeCommande.appendChild(listItem);
-    }
-    index++;
-  }
-
-  prixTotalElement.textContent = `Prix total : ${prixTotal.toFixed(2)} €`;
-
-  let modal = new bootstrap.Modal(document.getElementById('recapModal'));
-  modal.show();
-}
-*/
-
-
+// Fonction pour afficher le récapitulatif de la commande
 function afficherRecapitulatifCommande() {
   let listeCommande = document.getElementById('commandeListe');
   let prixTotalElement = document.getElementById('prixTotal');
@@ -371,12 +335,12 @@ document.getElementById('btnRecapCommande').addEventListener('click', afficherRe
 ///////////////   maj dans le footer /////////////
 function mettreAJourTotalArticles() { 
   let totalArticles = 0;
-  let index = 0;
+  let i = 0;
 
   // Parcourt les éléments de la commande pour calculer le total des quantités
-  while (index < commande.length) { 
-    totalArticles += commande[index].quantity;
-    index++;
+  while (i < commande.length) { 
+    totalArticles += commande[i].quantity;
+    i++;
   }
 
   // Met à jour le contenu de l'élément avec l'id "order-items"
@@ -386,14 +350,16 @@ function mettreAJourTotalArticles() {
   }
 }
 
+
+// Met à jour le total de la commande
 function mettreAJourTotalValeurCommande() {
   let totalValeur = 0;
-  let index = 0;
+  let i = 0;
 
   // Parcourt les éléments de la commande pour calculer la valeur totale
-  while (index < commande.length) {
-    totalValeur += commande[index].quantity * commande[index].unitPrice;
-    index++;
+  while (i < commande.length) {
+    totalValeur += commande[i].quantity * commande[i].unitPrice;
+    i++;
   }
 
   // Met à jour le contenu de l'élément avec l'id "order-total"
