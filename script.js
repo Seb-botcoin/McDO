@@ -259,7 +259,7 @@ function afficherDetailsProduit(item) {
 }
 
 
-
+/*
 
 // Fonction pour afficher le récapitulatif de commande
 function afficherRecapitulatifCommande() {
@@ -294,6 +294,75 @@ function afficherRecapitulatifCommande() {
   let modal = new bootstrap.Modal(document.getElementById('recapModal'));
   modal.show();
 }
+*/
+
+
+function afficherRecapitulatifCommande() {
+  let listeCommande = document.getElementById('commandeListe');
+  let prixTotalElement = document.getElementById('prixTotal');
+
+  listeCommande.innerHTML = ''; // Vide le contenu précédent
+  let prixTotal = 0;
+
+  // Crée un tableau pour afficher la commande
+  let tableau = document.createElement('table');
+  tableau.className = 'table table-striped';
+
+  // Ajouter l'en-tête du tableau
+  tableau.innerHTML = `
+    <thead>
+      <tr>
+        <th style="text-align: left;">Produit</th>
+        <th style="text-align: center;">Quantité</th>
+        <th style="text-align: right;">Sous-total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  let tbody = tableau.querySelector('tbody');
+
+  // Parcourt les éléments de la commande
+  commande.forEach(item => {
+    if (item.quantity > 0) {
+      const sousTotal = item.quantity * item.unitPrice;
+      prixTotal += sousTotal;
+
+      // Crée une ligne pour chaque produit
+      let ligne = document.createElement('tr');
+      ligne.innerHTML = `
+        <td>${item.name}</td>
+        <td class="text-center">
+          <button class="btn btn-outline-secondary btn-sm btn-minus" data-id="${item.id}">-</button>
+          <span class="mx-2 quantity" data-id="${item.id}">${item.quantity}</span>
+          <button class="btn btn-outline-primary btn-sm btn-plus" data-id="${item.id}">+</button>
+        </td>
+        <td class="text-end">${sousTotal.toFixed(2)} €</td>
+      `;
+
+      tbody.appendChild(ligne);
+
+      // Ajouter les gestionnaires d'événements aux boutons
+      const btnMinus = ligne.querySelector(`.btn-minus[data-id="${item.id}"]`);
+      const btnPlus = ligne.querySelector(`.btn-plus[data-id="${item.id}"]`);
+      const quantityDisplay = ligne.querySelector(`.quantity[data-id="${item.id}"]`);
+
+      attacherEvenementsAuxBoutons(btnMinus, btnPlus, quantityDisplay, item);
+    }
+  });
+
+  listeCommande.appendChild(tableau); // Ajoute le tableau au conteneur
+
+  // Met à jour le prix total
+  prixTotalElement.textContent = `Prix total : ${prixTotal.toFixed(2)} €`;
+
+  // Affiche la modale
+  let modal = new bootstrap.Modal(document.getElementById('recapModal'));
+  modal.show();
+}
+
+
+
 
 // Associe le bouton à l'affichage du récapitulatif
 document.getElementById('btnRecapCommande').addEventListener('click', afficherRecapitulatifCommande);
