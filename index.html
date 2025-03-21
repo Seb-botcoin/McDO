@@ -71,35 +71,34 @@
     </div>
 
     <!-- Modale Récapitulatif -->
-<!-- Modale Récapitulatif -->
-<div class="modal fade" id="recapModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal fade" id="recapModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
 
-            <!-- En-tête -->
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title" id="recapModalLabel">
-                    <img src="/assets/images/mcdo_logo.png" alt="McDonald's" style="height: 25px; margin-right: 10px;">
-                    Récapitulatif de votre commande
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <!-- Corps de la modale -->
-            <div class="modal-body">
-                <div id="commandeListe" class="list-group">
-                    <!-- Contenu dynamique généré ici -->
+                <!-- En-tête -->
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="recapModalLabel">
+                        <img src="/assets/images/mcdo_logo.png" alt="McDonald's" style="height: 25px; margin-right: 10px;">
+                        Récapitulatif de votre commande
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </div>
 
-            <!-- Pied de la modale -->
-            <div class="modal-footer bg-light">
-                <h5 id="prixTotal" class="me-auto">Prix total : <strong class="text-danger">0.00 €</strong></h5>
-                <button type="button" class="btn btn-danger">Valider la commande</button>
+                <!-- Corps de la modale -->
+                <div class="modal-body">
+                    <div id="commandeListe" class="list-group">
+                        <!-- Contenu dynamique généré ici -->
+                    </div>
+                </div>
+
+                <!-- Pied de la modale -->
+                <div class="modal-footer bg-light">
+                    <h5 id="prixTotal" class="me-auto">Prix total : <strong class="text-danger">0.00 €</strong></h5>
+                    <button type="button" class="btn btn-danger">Valider la commande</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Modale Détails Produit -->
     <div id="produitDetailsModal" class="modal fade" tabindex="-1" aria-hidden="true">
@@ -114,10 +113,13 @@
               <p id="produitDetailsDescription"></p>
               <p id="produitDetailsPrix" class="fw-bold"></p>
               <p id="produitDetailsCalories"></p>
+              <div id="produitDetailsPanier" class="text-center mt-3"></div>
             </div>
           </div>
         </div>
       </div>
+    
+
       <footer class="order-footer bg-warning px-4 py-3 position-fixed bottom-0 w-100">
         <div class="container d-flex justify-content-between">
             <div class="order-summary d-flex gap-4">
