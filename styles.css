@@ -259,3 +259,7 @@ margin-top: 3rem;
 .row {
   gap: 5rem 0;
 }
+
+.btn-success:hover {
+  background-color: #005922;
+}
