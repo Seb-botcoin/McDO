@@ -1,316 +1,546 @@
+
+// Déclaration des variables globales pour stocker les données JSON et les catégories fixes
 let donnees = []; // Contiendra les produits chargés depuis le fichier JSON
+let categoriesFixes = ["burgers", "sides", "drinks", "desserts", "menus", "happyMeal"]; // Liste explicite des catégories
 
-// Chargement des données depuis le fichier JSON
-fetch('produits.json') // Récupère les données JSON du fichier "produits.json" situé dans le même dossier que le script
-  .then(function (reponse) {
-    return reponse.json(); // Convertit la réponse brute en objet JavaScript utilisable
-    // Plus d'informations sur la méthode fetch : 
-    // https://developer.mozilla.org/fr/docs/Web/API/Fetch_API/Using_Fetch
-  })
-  .then(function (data) {
-    donnees = data; // Stocke les données dans la variable globale "donnees"
-    afficherProduits(donnees); // Appelle la fonction pour afficher les produits dans le tableau
-  })
-  .catch(function (error) {
-    // Affiche un message dans la console si une erreur survient (exemple : fichier introuvable)
-    console.error("Erreur lors du chargement du fichier JSON :", error);
-    // Documentation sur la gestion des promesses et les erreurs :
-    // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
-  });
-
-// Fonction pour afficher les produits dans le tableau
-function afficherProduits(produits) {
-  // Sélection de l'élément <tbody> du tableau pour y insérer les lignes dynamiquement
-  let tableauBody = document.querySelector('table tbody'); 
-  tableauBody.innerHTML = ""; // Réinitialise le contenu pour éviter les doublons
-
-  // Parcourt la liste des produits passés en paramètre
-  for (let i = 0; i < produits.length; i++) {
-    let produit = produits[i]; // Récupère le produit actuel
-
-    // Crée une nouvelle ligne de tableau (<tr>) pour afficher le produit
-    let ligne = document.createElement('tr'); 
-
-    // Remplit la ligne avec les colonnes du tableau via innerHTML
-    ligne.innerHTML = `
-      <td>` + produit.reference + `</td>
-      <td>` + produit.categorie + `</td>
-      <td>` + produit.libelle + `</td>
-      <td>` + produit.prix + ` €</td>
-      <td class="text-center">
-        <!-- Affiche une pastille colorée (verte/rouge) basée sur le stock -->
-        <span class="badge rounded-pill ` + (produit.stock < 20 ? 'bg-danger' : 'bg-success') + `" 
-              style="width: 20px; height: 20px; display: inline-block;"></span>
-      </td>
-      <td>
-        <!-- Trois icônes avec des actions spécifiques : Détails, Modifier, Supprimer -->
-        <i class="bi bi-eye text-primary me-2" style="cursor: pointer;" onclick="afficherDetail('` + produit.reference + `')"></i>
-        <i class="bi bi-pencil-square text-warning me-2" style="cursor: pointer;" onclick="modifierProduit('` + produit.reference + `')"></i>
-        <i class="bi bi-trash text-danger" style="cursor: pointer;" onclick="supprimerProduit('` + produit.reference + `')"></i>
-      </td>
-    `;
-
-    // Ajoute cette ligne au tableau
-    tableauBody.appendChild(ligne);
-  }
+// Fonction pour charger les données depuis un fichier JSON
+function chargerDonnees() {
+  fetch('mcdo.json') // Charger le fichier JSON
+      .then(function (reponse) {
+          return reponse.json(); // Convertir la réponse en objet JSON
+      })
+      .then(function (data) {
+          donnees = transformerDonneesEnTableau(data); // Transformer les données en tableau indexé basé sur les catégories fixes
+          afficherCategories(); // Appeler la fonction pour afficher les catégories
+      })
+      .catch(function (erreur) {
+          console.error("Erreur lors du chargement des données JSON :", erreur); // Gérer les erreurs
+      });
 }
 
-// Fonction pour afficher les détails d'un produit dans une modale Bootstrap
-function afficherDetail(reference) {
-  // Recherche le produit correspondant à la référence dans le tableau global "donnees"
-  // Utilisation de Array.prototype.find() :
-  // - Objectif : retourner le premier produit du tableau "donnees" dont la propriété "reference" correspond à la valeur du paramètre "reference".
-  // - Résultat : un objet produit si trouvé, ou "undefined" si aucun produit ne correspond.
-  // Plus d'informations sur Array.find() : 
-  // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-  let produit = donnees.find(function (p) {
-    // Comparaison entre la référence de l'élément actuel (p.reference)
-    // et la valeur fournie au paramètre "reference"
-    return p.reference === reference; 
-  });
-  // Vérifie si un produit correspondant a été trouvé
-  if (produit) {
-    // Mise à jour dynamique des champs de la modale avec les informations du produit :
-    // - Chaque champ dans la modale est identifié par son "id" correspondant.
-    // - La valeur ou le contenu de ces champs est mis à jour pour refléter les données du produit sélectionné.
-    document.getElementById('articleImage').src = '/images/' + produit.photo; 
-    // Définit l'image à afficher. Le dossier "/images/" doit contenir les photos des produits.
+// Fonction pour transformer les données en tableau indexé
+function transformerDonneesEnTableau(elements) {
+  let tableau = []; // Tableau pour stocker les données transformées
+  let index = 0;
 
-    document.getElementById('articleReference').textContent = produit.reference; 
-    // Affiche la référence unique du produit, ex. : "PHN001".
-
-    document.getElementById('articleLibelle').textContent = produit.libelle; 
-    // Affiche le nom ou la description courte du produit, ex. : "Téléphone iPhone 13".
-
-    document.getElementById('articleDescription').textContent = produit.description; 
-    // Affiche la description détaillée du produit.
-
-    document.getElementById('articlePrix').textContent = produit.prix; 
-    // Affiche le prix du produit, ex. : "1099.99 €".
-
-    document.getElementById('articleStock').textContent = produit.stock; 
-    // Affiche la quantité de stock disponible.
-
-    document.getElementById('articleCategorie').textContent = produit.categorie; 
-    // Affiche la catégorie associée au produit, ex. : "Téléphones".
-
-    // Initialisation et affichage de la modale avec Bootstrap :
-    // - Utilisation de Bootstrap.Modal pour contrôler l'affichage dynamique.
-    // - show() : méthode qui affiche la modale à l'utilisateur.
-    // Plus d'informations sur les modales Bootstrap :
-    // https://getbootstrap.com/docs/5.3/components/modal/
-    let modal = new bootstrap.Modal(document.getElementById('detailModal'));
-    modal.show(); 
-  } else {
-    // Si aucun produit correspondant n'a été trouvé, loggue un message d'erreur dans la console
-    console.error("Produit introuvable pour la référence : " + reference);
-    // Plus d'informations sur console.error :
-    // https://developer.mozilla.org/fr/docs/Web/API/Console/error
-  }
-}
-
-
-// Fonction pour ouvrir la modale en mode "Ajouter"
-function ajouterProduit() {
-  // Réinitialise les champs de la modale
-  document.getElementById('productId').value = ''; // Champ caché utilisé pour identifier l'action
-  document.getElementById('productReference').value = ''; // Réinitialise le champ Référence
-  document.getElementById('productLibelle').value = ''; // Réinitialise le champ Libellé
-  document.getElementById('productDescription').value = ''; // Réinitialise le champ Description
-  document.getElementById('productPrix').value = ''; // Réinitialise le champ Prix
-  document.getElementById('productStock').value = ''; // Réinitialise le champ Stock
-  document.getElementById('productCategorie').value = ''; // Réinitialise le champ Catégorie
-
-  // Modifie le titre de la modale
-  document.getElementById('productModalLabel').textContent = 'Ajouter un produit';
-
-  // Initialise et affiche la modale Bootstrap
-  let productModal = new bootstrap.Modal(document.getElementById('productModal'));
-  productModal.show(); 
-  // Documentation Bootstrap sur les modales : https://getbootstrap.com/docs/5.3/components/modal/#via-javascript
-}
-
-// Fonction pour ouvrir la modale en mode "Modifier"
-function modifierProduit(reference) {
-  // Recherche le produit correspondant à la référence fournie
-  let produit = donnees.find(function (p) {
-    return p.reference === reference; 
-    // Utilise Array.prototype.find pour localiser le produit à modifier
-    // Documentation : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-  });
-
-  // Si un produit correspondant est trouvé
-  if (produit) {
-    // Pré-remplit les champs avec les informations du produit
-    document.getElementById('productId').value = produit.reference; // Référence utilisée pour identifier le produit à modifier
-    document.getElementById('productReference').value = produit.reference;
-    document.getElementById('productLibelle').value = produit.libelle;
-    document.getElementById('productDescription').value = produit.description;
-    document.getElementById('productPrix').value = produit.prix;
-    document.getElementById('productStock').value = produit.stock;
-    document.getElementById('productCategorie').value = produit.categorie;
-
-    // Met à jour l'image du produit
-    document.getElementById('productImage').src = '/images/' + produit.photo;
-    // Modifie le titre de la modale pour indiquer qu'on est en mode "Modification"
-    document.getElementById('productModalLabel').textContent = 'Modifier un produit';
-
-    // Affiche la modale Bootstrap
-    let productModal = new bootstrap.Modal(document.getElementById('productModal'));
-    productModal.show();
-
-    // Documentation Bootstrap pour afficher une modale : https://getbootstrap.com/docs/5.3/components/modal/#via-javascript
-  }
-}
-
-// Fonction pour supprimer un produit de la liste et mettre à jour le tableau
-function supprimerProduit(reference) {
-  // Filtre les produits pour exclure celui correspondant à la référence
-  donnees = donnees.filter(function (p) {
-    return p.reference !== reference; // Retourne tous les produits sauf celui à supprimer
-    // Documentation sur la méthode filter : 
-    // https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/filter
-  });
-
-  // Met à jour le tableau affiché après suppression
-  afficherProduits(donnees); 
-  // Appelle la fonction pour recharger le tableau avec la liste mise à jour
-
-  // Affiche un message dans la console pour confirmer la suppression
-  console.log("Produit avec la référence " + reference + " supprimé.");
-  // Plus d'informations sur console.log : 
-  // https://developer.mozilla.org/fr/docs/Web/API/Console/log
-}
-
-// Gestion de l'événement pour le bouton "Enregistrer" dans la modale
-// - Cette partie du code est exécutée lorsqu'on clique sur le bouton "Enregistrer" dans la modale.
-// - Elle permet soit d'ajouter un nouveau produit, soit de modifier un produit existant.
-document.getElementById('saveProductButton').addEventListener('click', function () {
-  // Étape 1 : Récupérer les valeurs des champs du formulaire dans la modale
-  // - Chaque champ de la modale est identifié par un "id".
-  // - On utilise "document.getElementById()" pour récupérer la valeur saisie par l'utilisateur.
-
-  let id = document.getElementById('productId').value; // Identifiant caché pour savoir si on modifie un produit existant
-  let reference = document.getElementById('productReference').value; // Référence unique du produit
-  let libelle = document.getElementById('productLibelle').value; // Nom ou libellé du produit
-  let description = document.getElementById('productDescription').value; // Description détaillée du produit
-  let prix = parseFloat(document.getElementById('productPrix').value); // Prix du produit (converti en nombre décimal)
-  let stock = parseInt(document.getElementById('productStock').value); // Stock disponible (converti en entier)
-  let categorie = document.getElementById('productCategorie').value; // Catégorie du produit
-
-  // Étape 2 : Vérifier si on modifie un produit existant ou si on en ajoute un nouveau
-  // - On utilise la méthode "find()" pour chercher un produit dans le tableau "donnees" qui a la même référence que "id".
-  // - Si un produit est trouvé, cela signifie qu'on est en mode "Modification".
-  let produit = donnees.find(function (p) {
-    return p.reference === id; // Compare la référence du produit avec l'identifiant récupéré
-  });
-
-  if (produit) {
-    // Si un produit correspondant est trouvé, on met à jour ses propriétés avec les nouvelles valeurs saisies
-    produit.reference = reference; // Met à jour la référence
-    produit.libelle = libelle; // Met à jour le libellé
-    produit.description = description; // Met à jour la description
-    produit.prix = prix; // Met à jour le prix
-    produit.stock = stock; // Met à jour le stock
-    produit.categorie = categorie; // Met à jour la catégorie
-  } else {
-    // Sinon, si aucun produit n'est trouvé, cela signifie qu'on est en mode "Ajout"
-    // - On crée un nouvel objet produit avec les valeurs saisies dans le formulaire
-    let nouveauProduit = {
-      reference: reference, // Référence unique du nouveau produit
-      libelle: libelle, // Libellé du nouveau produit
-      description: description, // Description du nouveau produit
-      prix: prix, // Prix du nouveau produit
-      stock: stock, // Stock initial du nouveau produit
-      categorie: categorie, // Catégorie du nouveau produit
-      photo: 'airpod.jpg' // Image par défaut pour le nouveau produit
-    };
-
-    // On ajoute le nouvel objet produit au tableau global "donnees"
-    donnees.push(nouveauProduit); // La méthode "push()" ajoute un élément à la fin du tableau
+  while (index < categoriesFixes.length) {
+    let categorie = categoriesFixes[index]; // Récupérer chaque catégorie fixe
+    if (elements[categorie]) { // Vérifier si la catégorie existe dans les données
+      tableau.push({
+        categorie: categorie, // Ajouter le nom de la catégorie
+        produits: elements[categorie] // Ajouter les produits associés
+      });
+    }
+    index++;
   }
 
-  // Étape 3 : Mettre à jour l'affichage du tableau HTML
-  // - On appelle la fonction "afficherProduits()" pour recharger le tableau avec les données mises à jour
-  afficherProduits(donnees);
+  return tableau; // Retourner le tableau indexé
+}
 
-  // Étape 4 : Fermer la modale Bootstrap
-  // - Une fois que l'action (ajout ou modification) est terminée, on ferme la fenêtre modale
-  let productModal = bootstrap.Modal.getInstance(document.getElementById('productModal')); // Récupère l'instance de la modale
-  if (productModal) {
-    productModal.hide(); // Ferme la modale
+// Fonction principale pour afficher les catégories
+function afficherCategories() {
+  let categoriesTableau = donnees; // Utiliser le tableau transformé dans la variable globale
+  let conteneurCategories = document.getElementById('categories');
+  conteneurCategories.innerHTML = ''; // Nettoyer le conteneur
+
+  // Créer une rangée avec les catégories et l'ajouter au conteneur
+  let ligne = creerRangee(categoriesTableau);
+  conteneurCategories.appendChild(ligne);
+}
+
+// Fonction pour créer une rangée contenant les colonnes des catégories
+function creerRangee(categoriesTableau) {
+  let ligne = document.createElement('div');
+  ligne.className = 'row'; // Classe Bootstrap pour mise en page
+
+  let index = 0;
+  while (index < categoriesTableau.length) {
+    let colonne = creerColonne(categoriesTableau[index].categorie, categoriesTableau[index].produits);
+    ligne.appendChild(colonne); // Ajouter chaque colonne à la rangée
+    index++;
   }
-});
 
+  return ligne;
+}
 
-/* 
-===========================
- RÉCAPITULATIF DU CODE JS
-===========================
+// Fonction pour créer une colonne pour une catégorie
+function creerColonne(nomCategorie, produits) {
+  let colonne = document.createElement('div');
+  colonne.className = 'col-md-4 text-center mb-4'; // Classes Bootstrap
 
-1. **Chargement des données JSON :**
-   - Utilisation de la fonction `fetch` pour lire les données du fichier `produits.json`.
-   - Conversion des données JSON en un objet JavaScript pour être manipulé dans l'application.
-   - Gestion des erreurs si le fichier JSON est manquant ou inaccessible.
+  // Contenu HTML de la colonne
+  colonne.innerHTML =
+    '<div class="category-card">' +
+      '<a href="#" class="d-block text-decoration-none text-dark" data-category="' + nomCategorie + '">' +
+        '<img src="/assets/' + produits[0].image + '" alt="' + nomCategorie + '" class="img-fluid mb-2" style="height: 150px; width: auto;">' +
+        '<h5 class="m-0">' + nomCategorie + '</h5>' +
+      '</a>' +
+    '</div>';
 
-2. **Affichage dynamique des produits :**
-   - La fonction `afficherProduits()` utilise les données pour créer dynamiquement des lignes de tableau HTML.
-   - Les données de chaque produit sont insérées dans des colonnes (<td>), y compris des icônes pour "Détails", "Modifier", "Supprimer".
+  // Ajouter un gestionnaire d'événement pour afficher les produits de cette catégorie
+  let lien = colonne.querySelector('a');
+  lien.addEventListener('click', function (event) {
+    event.preventDefault();
+    afficherProduitsDansModale(nomCategorie, produits); // Appeler la fonction pour afficher les produits
+  });
 
-3. **Gestion des actions :**
-   - **Afficher Détails :** La fonction `afficherDetail()` ouvre une modale Bootstrap avec les détails d'un produit spécifique.
-   - **Modifier :** La fonction `modifierProduit()` préremplit les champs de la modale avec les données du produit existant.
-   - **Ajouter :** La fonction `ajouterProduit()` ouvre la modale en mode vide pour ajouter un nouveau produit.
-   - **Supprimer :** La fonction `supprimerProduit()` met à jour la liste après suppression d'un produit.
+  return colonne;
+}
 
-4. **Enregistrement des modifications ou ajout :**
-   - Le bouton "Enregistrer" dans la modale gère à la fois les ajouts (nouveau produit) et les modifications (produit existant).
-   - Les données mises à jour sont immédiatement reflétées dans l'interface utilisateur.
+// Appel de la fonction pour charger les données au démarrage du script
+chargerDonnees();
 
-5. **Bootstrap et interactions utilisateur :**
-   - Les modales sont gérées avec `bootstrap.Modal` pour afficher/fermer les fenêtres contextuelles.
-   - Les classes Bootstrap (comme `badge`, `text-primary`) et les icônes (Bootstrap Icons) ajoutent des styles visuels et des actions interactives.
-
-Ressources utilisées :
-- Fetch API : https://developer.mozilla.org/fr/docs/Web/API/Fetch_API
-- Bootstrap Modals : https://getbootstrap.com/docs/5.3/components/modal/
-- Bootstrap Icons : https://icons.getbootstrap.com/
-- Array Methods (`find`, `filter`, etc.) : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array
-*/
-
+////////////////////////////////
+// Variable pour enregistrer la commande
 
 /*
-===========================
- SYNTHÈSE DU FONCTIONNEMENT
-===========================
+let commande = {};
 
-1. **Principales variables :**
-   - `donnees` : Tableau global contenant les produits chargés depuis le fichier JSON. Toutes les opérations (ajout, suppression, modification) modifient directement cette variable.
-   - `productModal` : Représente une instance de la modale Bootstrap. Elle est utilisée pour ouvrir ou fermer la modale.
+function afficherProduitsDansModale(categorie, items) {
+  let modalTitle = document.getElementById('produitsModalLabel');
+  if (!modalTitle) {
+    console.error("L'élément 'produitsModalLabel' est introuvable.");
+    return;
+  }
+  modalTitle.textContent = 'Produits - ' + categorie;
 
-2. **Rôles des fonctions et variables importantes :**
-   - `fetch('produits.json')` :
-     Chargement initial des données depuis le fichier JSON et stockage dans `donnees`.
-   - `afficherProduits(produits)` :
-     Génère et insère dynamiquement les lignes du tableau à partir de la liste de produits.
-   - `afficherDetail(reference)` :
-     Ouvre une modale avec les détails d'un produit spécifique (champ par champ).
-   - `ajouterProduit()` :
-     Réinitialise les champs et ouvre la modale pour ajouter un nouveau produit.
-   - `modifierProduit(reference)` :
-     Pré-remplit les champs de la modale avec les données du produit correspondant pour modification.
-   - `supprimerProduit(reference)` :
-     Supprime un produit du tableau `donnees` en utilisant la méthode `filter`.
-   - `document.getElementById('saveProductButton').addEventListener('click', ...)` :
-     Gère les événements du bouton "Enregistrer" dans la modale, pour ajouter ou modifier un produit.
+  let modalBody = document.querySelector('.modal-body');
+  if (!modalBody) {
+    console.error("L'élément 'modal-body' est introuvable.");
+    return;
+  }
 
-3. **Structure Bootstrap utilisée :**
-   - Classes utilisées : 
-     - `modal`, `fade`, `modal-dialog`, `modal-content` pour la gestion des modales.
-     - `badge` pour les indicateurs visuels (rouge/vert pour le stock).
-     - `bi-eye`, `bi-pencil-square`, `bi-trash` pour les icônes d'actions interactives.
+  modalBody.innerHTML = ''; // Vide le contenu précédent
 
-Conclusion :
-L'application repose sur la mise à jour dynamique de `donnees` et sur la synchronisation avec l'interface utilisateur (tableau HTML). Chaque action utilisateur (cliquer sur "Détails", "Modifier", ou "Supprimer") déclenche une fonction qui effectue les changements en temps réel.
+  let row = document.createElement('div'); // Crée une rangée
+  row.className = 'row gy-5'; // Ajout d'espace entre les rangées
+
+  items.forEach(function (item) {
+    let productId = item.id;
+
+    // Initialise la commande pour ce produit si elle n'existe pas encore
+    if (!commande[productId]) {
+      commande[productId] = {
+        name: item.name,
+        quantity: 0,
+        unitPrice: item.price
+      };
+    }
+
+    let col = document.createElement('div'); // Colonne pour chaque card
+    col.className = 'col-md-4';
+
+    col.innerHTML = `
+      <div class="card" style="border-radius: 10px; height: 350px;">
+        <img src="/assets/${item.image}" class="card-img-top produit-image" alt="${item.name}" 
+          style="height: 200px; object-fit: cover; cursor: pointer;">
+        <div class="card-body text-center">
+          <h5 class="card-title">${item.name}</h5>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+          <button class="btn btn-outline-secondary btn-minus" data-id="${productId}" disabled>-</button>
+          <span class="quantity" data-id="${productId}">0</span>
+          <button class="btn btn-outline-primary btn-plus" data-id="${productId}">+</button>
+        </div>
+      </div>
+    `;
+
+    // Ajout de l'événement clic sur l'image pour afficher les détails du produit
+    const imageElement = col.querySelector('.produit-image');
+    imageElement.addEventListener('click', function () {
+      console.log(`Affichage des détails pour le produit : ${item.name}`); // Log pour vérifier l'événement
+      afficherDetailsProduit(item); // Appel à la fonction pour afficher les détails
+    });
+
+    // Ajout des événements pour les boutons
+    const btnMinus = col.querySelector(`.btn-minus[data-id="${productId}"]`);
+    const btnPlus = col.querySelector(`.btn-plus[data-id="${productId}"]`);
+    const quantityDisplay = col.querySelector(`.quantity[data-id="${productId}"]`);
+
+    // Gérer le clic sur le bouton "moins"
+    btnMinus.addEventListener('click', function () {
+      if (commande[productId].quantity > 0) {
+        commande[productId].quantity--;
+        quantityDisplay.textContent = commande[productId].quantity;
+
+        // Désactive le bouton "moins" si la quantité atteint 0
+        if (commande[productId].quantity === 0) {
+          btnMinus.disabled = true;
+        }
+      }
+    });
+
+    // Gérer le clic sur le bouton "plus"
+    btnPlus.addEventListener('click', function () {
+      commande[productId].quantity++;
+      quantityDisplay.textContent = commande[productId].quantity;
+
+      // Active le bouton "moins" si la quantité dépasse 0
+      if (commande[productId].quantity > 0) {
+        btnMinus.disabled = false;
+      }
+    });
+
+    row.appendChild(col); // Ajout de la colonne à la rangée
+  });
+
+  modalBody.appendChild(row); // Ajout de la rangée au corps de la modale
+
+  let modalElement = document.getElementById('produitsModal');
+  if (modalElement) {
+    let modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+}
+
+
+function afficherDetailsProduit(item) {
+  // Récupère les éléments de la modale
+  const produitImage = document.getElementById('produitImage');
+  const produitName = document.getElementById('produitName');
+  const produitDescription = document.getElementById('produitDescription');
+  const produitPrix = document.getElementById('produitPrix');
+  const produitCalories = document.getElementById('produitCalories');
+
+  // Met à jour les éléments avec les données du produit
+  produitImage.src = `/assets/${item.image}`;
+  produitImage.alt = item.name;
+  produitName.textContent = item.name;
+  produitDescription.textContent = item.description;
+  produitPrix.textContent = item.price.toFixed(2);
+  produitCalories.textContent = item.calories;
+
+  // Affiche la modale
+  var detailsModal = new bootstrap.Modal(document.getElementById('produitDetailsModal'));
+  detailsModal.show();
+}
+
+function afficherRecapitulatifCommande() {
+  let listeCommande = document.getElementById('commandeListe');
+  let prixTotalElement = document.getElementById('prixTotal');
+  
+  listeCommande.innerHTML = ''; // Vide la liste
+
+  let prixTotal = 0;
+
+  // Parcourt les éléments de la commande pour les afficher
+  Object.keys(commande).forEach(function (productId) {
+    const item = commande[productId];
+    if (item.quantity > 0) {
+      const sousTotal = item.quantity * item.unitPrice;
+      prixTotal += sousTotal;
+
+      // Ajoute l'article à la liste avec le nom du produit
+      const listItem = document.createElement('li');
+      listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+      listItem.innerHTML = `
+        <span class="fw-bold">${item.name}</span> <!-- Remplacé le numéro par le nom -->
+        <span>${item.quantity} x ${item.unitPrice.toFixed(2)} €</span>
+        <span>${sousTotal.toFixed(2)} €</span>
+      `;
+      listeCommande.appendChild(listItem);
+    }
+  });
+
+
+  
+  // Met à jour le prix total
+  prixTotalElement.textContent = `Prix total : ${prixTotal.toFixed(2)} €`;
+
+  // Affiche la modale
+  let modal = new bootstrap.Modal(document.getElementById('recapModal'));
+  modal.show();
+}
+
+// Associe le bouton à l'affichage du récapitulatif
+document.getElementById('btnRecapCommande').addEventListener('click', afficherRecapitulatifCommande);
+*/
+////////////////////////////////
+/*
+// Déclaration de la commande comme tableau
+let commande = []; // Chaque élément sera { id, name, quantity, unitPrice }
+
+// Fonction pour afficher les produits dans la modale
+function afficherProduitsDansModale(categorie, items) {
+  let modalTitle = document.getElementById('produitsModalLabel');
+  if (!modalTitle) {
+    console.error("L'élément 'produitsModalLabel' est introuvable.");
+    return;
+  }
+  modalTitle.textContent = 'Produits - ' + categorie;
+
+  let modalBody = document.querySelector('.modal-body');
+  if (!modalBody) {
+    console.error("L'élément 'modal-body' est introuvable.");
+    return;
+  }
+
+  modalBody.innerHTML = ''; // Vide le contenu précédent
+
+  let row = document.createElement('div'); // Crée une rangée
+  row.className = 'row gy-5'; // Ajout d'espace entre les rangées
+
+  let index = 0;
+  while (index < items.length) {
+    let item = items[index];
+    let productId = item.id;
+
+    // Initialise la commande pour ce produit si elle n'existe pas encore
+    if (!commande.find(commandeItem => commandeItem.id === productId)) {
+      commande.push({
+        id: productId,
+        name: item.name,
+        quantity: 0,
+        unitPrice: item.price
+      });
+    }
+
+    let col = document.createElement('div'); // Colonne pour chaque carte
+    col.className = 'col-md-4';
+
+    col.innerHTML = `
+      <div class="card" style="border-radius: 10px; height: 350px;">
+        <img src="/assets/${item.image}" class="card-img-top produit-image" alt="${item.name}" 
+          style="height: 200px; object-fit: cover; cursor: pointer;">
+        <div class="card-body text-center">
+          <h5 class="card-title">${item.name}</h5>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+          <button class="btn btn-outline-secondary btn-minus" data-id="${productId}" disabled>-</button>
+          <span class="quantity" data-id="${productId}">0</span>
+          <button class="btn btn-outline-primary btn-plus" data-id="${productId}">+</button>
+        </div>
+      </div>
+    `;
+
+    // Ajout des événements
+    const btnMinus = col.querySelector(`.btn-minus[data-id="${productId}"]`);
+    const btnPlus = col.querySelector(`.btn-plus[data-id="${productId}"]`);
+    const quantityDisplay = col.querySelector(`.quantity[data-id="${productId}"]`);
+
+    // Gérer le clic sur le bouton "moins"
+    btnMinus.addEventListener('click', function () {
+      let commandeItem = commande.find(item => item.id === productId);
+      if (commandeItem.quantity > 0) {
+        commandeItem.quantity--;
+        quantityDisplay.textContent = commandeItem.quantity;
+
+        // Désactive le bouton "moins" si la quantité atteint 0
+        if (commandeItem.quantity === 0) {
+          btnMinus.disabled = true;
+        }
+      }
+    });
+
+    // Gérer le clic sur le bouton "plus"
+    btnPlus.addEventListener('click', function () {
+      let commandeItem = commande.find(item => item.id === productId);
+      commandeItem.quantity++;
+      quantityDisplay.textContent = commandeItem.quantity;
+
+      // Active le bouton "moins" si la quantité dépasse 0
+      if (commandeItem.quantity > 0) {
+        btnMinus.disabled = false;
+      }
+    });
+
+    row.appendChild(col); // Ajout de la colonne à la rangée
+    index++;
+  }
+
+  modalBody.appendChild(row); // Ajout de la rangée au corps de la modale
+
+  let modalElement = document.getElementById('produitsModal');
+  if (modalElement) {
+    let modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+}
 
 */
+// Déclaration de la commande comme tableau
+let commande = []; // Chaque élément sera { id, name, quantity, unitPrice }
+
+// Fonction pour afficher les produits dans la modale
+function afficherProduitsDansModale(categorie, items) {
+  let modalTitle = document.getElementById('produitsModalLabel');
+  if (!modalTitle) {
+    console.error("L'élément 'produitsModalLabel' est introuvable.");
+    return;
+  }
+  modalTitle.textContent = 'Produits - ' + categorie;
+
+  let modalBody = document.querySelector('.modal-body');
+  if (!modalBody) {
+    console.error("L'élément 'modal-body' est introuvable.");
+    return;
+  }
+
+  modalBody.innerHTML = ''; // Vide le contenu précédent
+
+  let row = document.createElement('div'); // Crée une rangée
+  row.className = 'row gy-5'; // Ajout d'espace entre les rangées
+
+  let index = 0;
+  while (index < items.length) {
+    let item = items[index];
+    let productId = item.id;
+
+    // Initialise la commande pour ce produit si elle n'existe pas encore
+    let existeDeja = false;
+    let i = 0;
+    
+    // Parcourt la commande pour vérifier si le produit existe déjà
+    while (i < commande.length) {
+      if (commande[i].id === productId) {
+        existeDeja = true;
+        break;
+      }
+      i++;
+    }
+    
+    // Si le produit n'existe pas, on l'ajoute
+    if (!existeDeja) {
+      commande.push({
+        id: productId,
+        name: item.name,
+        quantity: 0,
+        unitPrice: item.price
+      });
+    }
+
+    let col = document.createElement('div'); // Colonne pour chaque carte
+    col.className = 'col-md-4';
+
+    col.innerHTML = `
+      <div class="card" style="border-radius: 10px; height: 350px;">
+        <img src="/assets/${item.image}" class="card-img-top produit-image" alt="${item.name}" 
+          style="height: 200px; object-fit: cover; cursor: pointer;">
+        <div class="card-body text-center">
+          <h5 class="card-title">${item.name}</h5>
+        </div>
+        <div class="card-footer d-flex justify-content-between align-items-center">
+          <button class="btn btn-outline-secondary btn-minus" data-id="${productId}" disabled>-</button>
+          <span class="quantity" data-id="${productId}">0</span>
+          <button class="btn btn-outline-primary btn-plus" data-id="${productId}">+</button>
+        </div>
+      </div>
+    `;
+
+    // Ajout des événements
+    const btnMinus = col.querySelector(`.btn-minus[data-id="${productId}"]`);
+    const btnPlus = col.querySelector(`.btn-plus[data-id="${productId}"]`);
+    const quantityDisplay = col.querySelector(`.quantity[data-id="${productId}"]`);
+
+    // Gérer le clic sur le bouton "moins"
+    btnMinus.addEventListener('click', function () {
+      let commandeItem = commande.find(item => item.id === productId);
+      if (commandeItem.quantity > 0) {
+        commandeItem.quantity--;
+        quantityDisplay.textContent = commandeItem.quantity;
+
+        // Désactive le bouton "moins" si la quantité atteint 0
+        if (commandeItem.quantity === 0) {
+          btnMinus.disabled = true;
+        }
+      }
+    });
+
+    // Gérer le clic sur le bouton "plus"
+    btnPlus.addEventListener('click', function () {
+      let commandeItem = commande.find(item => item.id === productId);
+
+      // Ajouter le produit si non présent
+      if (!commandeItem) {
+        commande.push({
+          id: productId,
+          name: item.name,
+          quantity: 1,
+          unitPrice: item.price
+        });
+      } else {
+        commandeItem.quantity++;
+      }
+
+      quantityDisplay.textContent = commande.find(item => item.id === productId).quantity;
+
+      // Activer le bouton "moins" si la quantité dépasse 0
+      if (commande.find(item => item.id === productId).quantity > 0) {
+        btnMinus.disabled = false;
+      }
+    });
+
+    row.appendChild(col); // Ajout de la colonne à la rangée
+    index++;
+  }
+
+  modalBody.appendChild(row); // Ajout de la rangée au corps de la modale
+
+  let modalElement = document.getElementById('produitsModal');
+  if (modalElement) {
+    let modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+}
+/////////////////
+/*
+// Fonction pour afficher les détails d'un produit
+function afficherDetailsProduit(item) {
+  const produitImage = document.getElementById('produitImage');
+  const produitName = document.getElementById('produitName');
+  const produitDescription = document.getElementById('produitDescription');
+  const produitPrix = document.getElementById('produitPrix');
+  const produitCalories = document.getElementById('produitCalories');
+
+  produitImage.src = `/assets/${item.image}`;
+  produitImage.alt = item.name;
+  produitName.textContent = item.name;
+  produitDescription.textContent = item.description;
+  produitPrix.textContent = item.price.toFixed(2);
+  produitCalories.textContent = item.calories;
+
+  var detailsModal = new bootstrap.Modal(document.getElementById('produitDetailsModal'));
+  detailsModal.show();
+}
+*/
+//////////////////////////
+
+
+
+
+// Fonction pour afficher le récapitulatif de commande
+function afficherRecapitulatifCommande() {
+  let listeCommande = document.getElementById('commandeListe');
+  let prixTotalElement = document.getElementById('prixTotal');
+  
+  listeCommande.innerHTML = ''; // Vide la liste
+  let prixTotal = 0;
+
+  let index = 0;
+  while (index < commande.length) {
+    const item = commande[index];
+
+    if (item.quantity > 0) {
+      const sousTotal = item.quantity * item.unitPrice;
+      prixTotal += sousTotal;
+
+      const listItem = document.createElement('li');
+      listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+      listItem.innerHTML = `
+        <span class="fw-bold">${item.name}</span>
+        <span>${item.quantity} x ${item.unitPrice.toFixed(2)} €</span>
+        <span>${sousTotal.toFixed(2)} €</span>
+      `;
+      listeCommande.appendChild(listItem);
+    }
+    index++;
+  }
+
+  prixTotalElement.textContent = `Prix total : ${prixTotal.toFixed(2)} €`;
+
+  let modal = new bootstrap.Modal(document.getElementById('recapModal'));
+  modal.show();
+}
+
+// Associe le bouton à l'affichage du récapitulatif
+document.getElementById('btnRecapCommande').addEventListener('click', afficherRecapitulatifCommande);
