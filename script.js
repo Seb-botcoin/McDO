@@ -186,38 +186,56 @@ function creerCarteProduit(item, commandeItem) {
 function attacherEvenementsAuxBoutons(btnMinus, btnPlus, quantityDisplay, commandeItem) {
   // Gérer le clic sur le bouton "moins"
   btnMinus.addEventListener('click', () => {
+    const isRecapModal = btnMinus.closest('#recapModal'); // Vérifie si le bouton est dans la modale récapitulatif
+    commandeItem.quantity--;
 
-    if (commandeItem.quantity > 0) {
-      commandeItem.quantity--;
-      quantityDisplay.textContent = commandeItem.quantity;
-
-      // Désactiver le bouton "moins" si la quantité atteint 0
-      if (commandeItem.quantity === 0) {
-        btnMinus.disabled = true;
-      }
-
-      // Mettre à jour les totaux
-      mettreAJourTotalArticles();
-      mettreAJourTotalValeurCommande();
+    if (commandeItem.quantity < 0) {
+      commandeItem.quantity = 0; // Empêche les quantités négatives
     }
+
+    quantityDisplay.textContent = commandeItem.quantity;
+
+    // Désactiver le bouton "moins" si la quantité atteint 0
+    if (commandeItem.quantity === 0) {
+      btnMinus.disabled = true;
+    }
+
+    // Si le bouton est dans la modale de récapitulatif, met à jour le sous-total
+    if (isRecapModal) {
+      const sousTotalCell = btnMinus.closest('tr').querySelector('.text-end');
+      const sousTotal = commandeItem.quantity * commandeItem.unitPrice;
+      sousTotalCell.textContent = `${sousTotal.toFixed(2)} €`;
+    }
+
+    // Mettre à jour les totaux globaux
+    mettreAJourTotalArticles();
+    mettreAJourTotalValeurCommande();
   });
 
   // Gérer le clic sur le bouton "plus"
   btnPlus.addEventListener('click', () => {
-    console.log(commandeItem.name, commandeItem.categorie);
+    const isRecapModal = btnPlus.closest('#recapModal'); // Vérifie si le bouton est dans la modale récapitulatif
     commandeItem.quantity++;
     quantityDisplay.textContent = commandeItem.quantity;
 
-    // Activer le bouton "moins" si la quantité dépasse 0
+    // Activer le bouton "moins" si la quantité est supérieure à 0
     if (commandeItem.quantity > 0) {
       btnMinus.disabled = false;
     }
 
-    // Mettre à jour les totaux
+    // Si le bouton est dans la modale de récapitulatif, met à jour le sous-total
+    if (isRecapModal) {
+      const sousTotalCell = btnPlus.closest('tr').querySelector('.text-end');
+      const sousTotal = commandeItem.quantity * commandeItem.unitPrice;
+      sousTotalCell.textContent = `${sousTotal.toFixed(2)} €`;
+    }
+
+    // Mettre à jour les totaux globaux
     mettreAJourTotalArticles();
     mettreAJourTotalValeurCommande();
   });
 }
+
 
 function afficherEtConfigurerModale() {
   let modalElement = document.getElementById('produitsModal');
