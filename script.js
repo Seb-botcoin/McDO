@@ -308,7 +308,7 @@ document.getElementById('btnRecapCommande').addEventListener('click', afficherRe
 ///////////////   maj dans le footer /////////////
 function mettreAJourTotalArticles() { 
   let totalArticles = 0;
-  let cmd = 0;
+  let index = 0;
 
   // Parcourt les éléments de la commande pour calculer le total des quantités
   while (index < commande.length) {
