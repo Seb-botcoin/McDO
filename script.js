@@ -75,7 +75,7 @@ function creerColonne(nomCategorie, produits) {
   colonne.innerHTML =
     '<div class="category-card">' +
       '<a href="#" class="d-block text-decoration-none text-dark" data-category="' + nomCategorie + '">' +
-        '<img src="/assets/' + produits[0].image + '" alt="' + nomCategorie + '" class="img-fluid mb-2" style="height: 150px; width: auto;">' +
+        '<img src="assets/' + produits[0].image + '" alt="' + nomCategorie + '" class="img-fluid mb-2" style="height: 150px; width: auto;">' +
         '<h5 class="m-0">' + nomCategorie + '</h5>' +
       '</a>' +
     '</div>';
@@ -158,7 +158,7 @@ function creerCarteProduit(item, commandeItem) {
 
   col.innerHTML = `
     <div class="card" style="border-radius: 10px; height: 350px;">
-      <img src="/assets/${item.image}" class="card-img-top produit-image" alt="${item.name}" 
+      <img src="assets/${item.image}" class="card-img-top produit-image" alt="${item.name}" 
         style="height: 200px; object-fit: cover; cursor: pointer;">
       <div class="card-body text-center">
         <h5 class="card-title">${item.name}</h5>
@@ -280,7 +280,7 @@ function afficherDetailsProduit(item) {
   }
 
   // Remplir les infos
-  produitImage.src = `/assets/${item.image}`;
+  produitImage.src = `assets/${item.image}`;
   produitImage.alt = item.name;
   produitName.textContent = item.name;
   produitDescription.textContent = item.description || "Description non disponible.";
