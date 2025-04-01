@@ -1,4 +1,11 @@
 # McDO
+
+Objectif, constituer une borne de commande McDo en projet collaboratif
+Technos JS Ajax Bootstrap HTML CSS
+Fonctionnel mais non terminé
+
+Description code ci-dessous
+
 ---------------Charger donnees ------------------------
 
 1. Intention derrière le bloc de code

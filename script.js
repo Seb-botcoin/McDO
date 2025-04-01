@@ -66,10 +66,10 @@ function creerRangee(categoriesTableau) {
   return ligne;
 }
 
-// Fonction pour créer une colonne pour une catégorie
+// Fonction pour créer une colonne avec les cards
 function creerColonne(nomCategorie, produits) {
   let colonne = document.createElement('div');
-  colonne.className = 'col-md-4 text-center mb-4'; // Classes Bootstrap
+  colonne.className = 'col-md-4 text-center mb-4'; // Classes Bootstrap col 4/12 et marge de 1.5rem
 
   // Contenu HTML de la colonne
   colonne.innerHTML =
@@ -116,7 +116,7 @@ function afficherProduitsDansModale(categorie, items) {
 function mettreAJourTitreDeLaModale(categorie) {
   let modalTitle = document.getElementById('produitsModalLabel');
 
-  modalTitle.textContent = 'Produits - ' + categorie;
+  modalTitle.textContent =  categorie;
 }
 
 function initialiserCommandePourProduit(item) {
@@ -131,6 +131,7 @@ function initialiserCommandePourProduit(item) {
     commandeItem = commande[commande.length - 1];
   
     // Ajouter les articles rattachés si le produit est un menu ou un Happy Meal
+    /*
     if (item.categorie === "menus" || item.categorie === "happyMeal") {
       articlesRattaches.push(
         {
@@ -146,7 +147,7 @@ function initialiserCommandePourProduit(item) {
           price: 0
         }
       );
-    }
+    } */
   }
   return commandeItem;
 }
@@ -286,15 +287,15 @@ function afficherDetailsProduit(item) {
   produitPrix.textContent = `Prix : ${item.price.toFixed(2)} €`;
   produitCalories.textContent = `Calories : ${item.calories || 'N/A'} kcal`;
 
-//== Ajouter le bouton "Ajouter au panier" ==//
-produitPanier.innerHTML = ''; // Nettoyer le conteneur
+  //== Ajouter le bouton "Ajouter au panier" ==//
+  produitPanier.innerHTML = ''; // Nettoyer le conteneur
 
-let boutonPanier = document.createElement('button'); // Crée un bouton
-boutonPanier.className = 'btn btn-success w-100'; // Classe Bootstrap pour le style
-boutonPanier.textContent = 'Ajouter au panier'; // Texte du bouton
+  let boutonPanier = document.createElement('button'); // Crée un bouton
+  boutonPanier.className = 'btn btn-success w-100'; // Classe Bootstrap pour le style
+  boutonPanier.textContent = 'Ajouter au panier'; // Texte du bouton
 
-// Gestion du clic sur le bouton
-boutonPanier.addEventListener('click', function() {
+  // Gestion du clic sur le bouton
+  boutonPanier.addEventListener('click', function() {
   let commandeItem = initialiserCommandePourProduit(item); // Ajout de l'article dans la commande
   commandeItem.quantity++; // Ajoute la quantité
 
@@ -311,8 +312,8 @@ boutonPanier.addEventListener('click', function() {
 
   if (btnMinus && commandeItem.quantity > 0) {
     btnMinus.disabled = false; // Active le bouton "-" si la valeur est suppérieur à 0
-  }
-});
+    }
+  });
 
 produitPanier.appendChild(boutonPanier); // Ajoute le bouton au conteneur
 
@@ -407,7 +408,7 @@ function mettreAJourTotalArticles() {
 
   // Parcourt les éléments de la commande pour calculer le total des quantités
   while (i < commande.length) { 
-    totalArticles += commande[i].quantity;
+    totalArticles = totalArticles + commande[i].quantity;
     i++;
   }
 
@@ -426,7 +427,7 @@ function mettreAJourTotalValeurCommande() {
 
   // Parcourt les éléments de la commande pour calculer la valeur totale
   while (i < commande.length) {
-    totalValeur += commande[i].quantity * commande[i].unitPrice;
+    totalValeur = totalValeur + commande[i].quantity * commande[i].unitPrice;
     i++;
   }
 
